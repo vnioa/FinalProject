@@ -3,15 +3,21 @@ package com.studymate.back;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.context.annotation.Bean;
+import org.testcontainers.activemq.ActiveMQContainer;
+import org.testcontainers.activemq.ArtemisContainer;
 import org.testcontainers.chromadb.ChromaDBContainer;
 import org.testcontainers.containers.CassandraContainer;
 import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.MSSQLServerContainer;
 import org.testcontainers.containers.MariaDBContainer;
 import org.testcontainers.containers.MongoDBContainer;
 import org.testcontainers.containers.MySQLContainer;
 import org.testcontainers.containers.Neo4jContainer;
 import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.containers.PulsarContainer;
+import org.testcontainers.containers.RabbitMQContainer;
 import org.testcontainers.elasticsearch.ElasticsearchContainer;
+import org.testcontainers.kafka.KafkaContainer;
 import org.testcontainers.milvus.MilvusContainer;
 import org.testcontainers.mongodb.MongoDBAtlasLocalContainer;
 import org.testcontainers.ollama.OllamaContainer;
@@ -22,6 +28,24 @@ import org.testcontainers.weaviate.WeaviateContainer;
 
 @TestConfiguration(proxyBeanMethods = false)
 class TestcontainersConfiguration {
+
+	@Bean
+	@ServiceConnection
+	ActiveMQContainer activemqContainer() {
+		return new ActiveMQContainer(DockerImageName.parse("apache/activemq-classic:latest"));
+	}
+
+	@Bean
+	@ServiceConnection
+	ArtemisContainer artemisContainer() {
+		return new ArtemisContainer(DockerImageName.parse("apache/activemq-artemis:latest"));
+	}
+
+	@Bean
+	@ServiceConnection(name = "azure-storage/azurite")
+	GenericContainer<?> azuriteContainer() {
+		return new GenericContainer<>(DockerImageName.parse("mcr.microsoft.com/azure-storage/azurite:latest")).withExposedPorts(10000, 10001, 10002);
+	}
 
 	@Bean
 	@ServiceConnection
@@ -39,6 +63,12 @@ class TestcontainersConfiguration {
 	@ServiceConnection
 	ElasticsearchContainer elasticsearchContainer() {
 		return new ElasticsearchContainer(DockerImageName.parse("docker.elastic.co/elasticsearch/elasticsearch:7.17.10"));
+	}
+
+	@Bean
+	@ServiceConnection
+	KafkaContainer kafkaContainer() {
+		return new KafkaContainer(DockerImageName.parse("apache/kafka-native:latest"));
 	}
 
 	@Bean
@@ -97,8 +127,26 @@ class TestcontainersConfiguration {
 
 	@Bean
 	@ServiceConnection
+	PostgreSQLContainer<?> postgresContainer() {
+		return new PostgreSQLContainer<>(DockerImageName.parse("postgres:latest"));
+	}
+
+	@Bean
+	@ServiceConnection
+	PulsarContainer pulsarContainer() {
+		return new PulsarContainer(DockerImageName.parse("apachepulsar/pulsar:latest"));
+	}
+
+	@Bean
+	@ServiceConnection
 	QdrantContainer qdrantContainer() {
 		return new QdrantContainer(DockerImageName.parse("qdrant/qdrant:latest"));
+	}
+
+	@Bean
+	@ServiceConnection
+	RabbitMQContainer rabbitContainer() {
+		return new RabbitMQContainer(DockerImageName.parse("rabbitmq:latest"));
 	}
 
 	@Bean
@@ -111,6 +159,12 @@ class TestcontainersConfiguration {
 	@ServiceConnection(name = "redis")
 	GenericContainer<?> redisStackContainer() {
 		return new GenericContainer<>(DockerImageName.parse("redis/redis-stack:latest")).withExposedPorts(6379);
+	}
+
+	@Bean
+	@ServiceConnection
+	MSSQLServerContainer<?> sqlServerContainer() {
+		return new MSSQLServerContainer<>(DockerImageName.parse("mcr.microsoft.com/mssql/server:latest"));
 	}
 
 	@Bean
