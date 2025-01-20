@@ -39,3 +39,4 @@ out/
 
 ### JTE ###
 /jte-classes/
+src/main/resources/application.properties
