@@ -5,6 +5,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
+/**
+ * 사용자 정보를 저장하는 Entity Class
+ * users 테이블과 매핑
+ */
 @Entity
 @Table(name = "users")
 @Getter
@@ -57,4 +63,35 @@ public class User {
      */
     @Column(nullable = false, unique = true, length = 100)
     private String email;
+
+    /**
+     * 이메일 인증 여부
+     * Not Null
+     * Default: false
+     */
+    @Column(nullable = false)
+    private Boolean emailVerified = false;
+
+    /**
+     * 생성 시간
+     * Default: 현재 시간
+     */
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime createdAt = LocalDateTime.now();
+
+    /**
+     * 마지막 수정 시간
+     * Default: 현재 시간
+     * 수정 시 자동 갱신
+     */
+    @Column(nullable = false)
+    private LocalDateTime updatedAt = LocalDateTime.now();
+
+    /**
+     * 업데이트 시 updatedAt 필드 갱신
+     */
+    @PreUpdate
+    public void preUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
 }
