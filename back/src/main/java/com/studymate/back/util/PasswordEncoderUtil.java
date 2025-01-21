@@ -1,4 +1,4 @@
 package com.studymate.back.util;
 
-public class JwtUtil {
+public class PasswordEncoderUtil {
 }
